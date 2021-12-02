@@ -3,6 +3,7 @@ use clap::{Arg, App};
 
 mod utils;
 mod p1;
+mod p2;
 
 fn main() {
     let matches = App::new("Advent of code!")
@@ -21,6 +22,7 @@ fn main() {
 
     match problem {
         "1" => p1::run(extra_star),
-        &_ => println!("Only know how to solve #{:?} for now :(", 1)
+        "2" => p2::run(extra_star),
+        &_ => println!("Only know how to solve #{:?} for now :(", (1..=2))
     }
 }

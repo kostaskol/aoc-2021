@@ -1,0 +1,1 @@
+[Advent of code 2021 solutions](https://adventofcode.com/2021)

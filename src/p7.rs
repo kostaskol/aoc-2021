@@ -1,17 +1,18 @@
 use crate::utils;
 
-pub fn run(extra: bool) {
+pub fn run(extra: bool) -> String {
   let lines = utils::read_lines("inputs/7.txt");
   let input = parse_line(&lines[0]);
 
-  if extra {
-    run_two_stars(&input);
-  } else {
-    run_one_star(&input);
-  }
+  format!("{}",
+    match extra {
+      false => run_one_star(&input),
+      true => run_two_stars(&input)
+    }
+  )
 }
 
-fn run_two_stars(input: &Vec<i32>) {
+fn run_two_stars(input: &Vec<i32>) -> i32 {
   let max = *input.iter().max().unwrap() + 1;
   let mut fuel = vec![vec![0; max as usize]; input.len()];
 
@@ -34,10 +35,10 @@ fn run_two_stars(input: &Vec<i32>) {
     }
   }
 
-  println!("{}", min);
+  min
  }
 
-fn run_one_star(input: &Vec<i32>) {
+fn run_one_star(input: &Vec<i32>) -> i32 {
   let max = *input.iter().max().unwrap() + 1;
   let mut fuel = vec![vec![0; max as usize]; input.len()];
 
@@ -58,7 +59,7 @@ fn run_one_star(input: &Vec<i32>) {
     }
   }
 
-  println!("{}", min);
+  min
 }
 
 fn parse_line(line: &str) -> Vec<i32> {

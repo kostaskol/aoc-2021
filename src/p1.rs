@@ -1,18 +1,19 @@
 use crate::utils;
 
-pub fn run(extra: bool) {
+pub fn run(extra: bool) -> String {
   let lines = utils::read_lines("inputs/1.txt");
   let input: Vec<i32> = utils::convert_to_ints(&lines);
 
-  if extra {
-    run_two_stars(input);
-  } else {
-    run_one_star(input);
-  }
+  format!("{}",
+    match extra {
+      true => run_two_stars(input),
+      false => run_one_star(input)
+    }
+  )
 }
 
 // Count increases in values
-fn run_one_star(input: Vec<i32>) {
+fn run_one_star(input: Vec<i32>) -> u32 {
   let mut cnt: u32 = 0;
 
   for i in 1..input.len() {
@@ -21,11 +22,11 @@ fn run_one_star(input: Vec<i32>) {
     }
   }
 
-  println!("{}", cnt);
+  cnt
 }
 
 // Count increases in values in windows of 3
-fn run_two_stars(input: Vec<i32>) {
+fn run_two_stars(input: Vec<i32>) -> u32 {
   let mut current_window: i32 = input[0..=2].iter().sum();
   let mut cnt: u32 = 0;
 
@@ -38,5 +39,5 @@ fn run_two_stars(input: Vec<i32>) {
     }
   }
 
-  println!("{}", cnt)
+  cnt
 }

@@ -3,6 +3,19 @@ use crate::utils;
 type Pointpair = (Point, Point);
 type Pointset = Vec<(Point, Point)>;
 
+pub fn run(extra: bool) -> String {
+  let lines = utils::read_lines("inputs/5.txt");
+  let points: Pointset = Point::from_lines(&lines);
+  let mut oceanfloor = Oceanfloor::new(&points);
+
+  format!("{}",
+    match extra {
+      true => run_two_stars(&mut oceanfloor, &points),
+      false => run_one_star(&mut oceanfloor, &points),
+    }
+  )
+}
+
 #[derive(Debug, Copy, Clone)]
 struct Point {
   x: i32,
@@ -165,34 +178,22 @@ impl Oceanfloor {
   }
 }
 
-pub fn run(extra: bool) {
-  let lines = utils::read_lines("inputs/5.txt");
-  let points: Pointset = Point::from_lines(&lines);
-  let mut oceanfloor = Oceanfloor::new(&points);
-
-  if extra {
-    run_two_stars(&mut oceanfloor, &points);
-  } else {
-    run_one_star(&mut oceanfloor, &points);
-  }
-}
-
-fn run_two_stars(oceanfloor: &mut Oceanfloor, points: &Vec<(Point, Point)>) {
+fn run_two_stars(oceanfloor: &mut Oceanfloor, points: &Vec<(Point, Point)>) -> i32 {
   for (p1, p2) in points {
     let interval = Point::interval(p1, p2, true);
     apply_points(oceanfloor, interval);
   }
 
-  println!("{}", count_twos(oceanfloor));
+  count_twos(oceanfloor)
 }
 
-fn run_one_star(oceanfloor: &mut Oceanfloor, points: &Vec<(Point, Point)>) {
+fn run_one_star(oceanfloor: &mut Oceanfloor, points: &Vec<(Point, Point)>) -> i32 {
   for (p1, p2) in points {
     let interval = Point::interval(p1, p2, false);
     apply_points(oceanfloor, interval);
   }
 
-  println!("{}", count_twos(oceanfloor));
+  count_twos(oceanfloor)
 }
 
 fn count_twos(oceanfloor: &Oceanfloor) -> i32 {

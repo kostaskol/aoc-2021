@@ -2,6 +2,19 @@ use std::collections::VecDeque;
 
 use crate::utils;
 
+pub fn run(extra: bool) -> String {
+  let input = utils::read_lines("inputs/6.txt");
+  let mut school = School::from_input(&input);
+  let input = parse_line_i32(&input[0]);
+
+  format!("{}",
+    match extra {
+      false => run_one_star(&mut school),
+      true => run_two_star(&input)
+    }
+  )
+}
+
 struct School {
   fishes: Vec<Fish>
 }
@@ -59,20 +72,7 @@ impl Fish {
   }
 }
 
-pub fn run(extra: bool) {
-  let input = utils::read_lines("inputs/6.txt");
-  let mut school = School::from_input(&input);
-  let input = parse_line_i32(&input[0]);
-
-  if extra {
-    run_two_star(&input);
-  } else {
-    // run_one_star(&mut school);
-    run_one_star(&mut school);
-  }
-}
-
-fn run_two_star(input: &Vec<i32>) { 
+fn run_two_star(input: &Vec<i32>) -> i64 { 
   let mut pipeline = VecDeque::from(vec![0 as i64; 9]);
   for &i in input {
     pipeline[i as usize] += 1;
@@ -84,15 +84,16 @@ fn run_two_star(input: &Vec<i32>) {
     pipeline[6] += pipeline[8];
   }
 
-  println!("{}", pipeline.iter().sum::<i64>());
+  pipeline.iter().sum::<i64>()
 }
 
-fn run_one_star(school: &mut School) {
+// Naive way. Finishes near instantly
+fn run_one_star(school: &mut School) -> i64{
   for _ in 0..80 {
     school.next_day();
   }
 
-  println!("{}", school.fishes.len());
+  school.fishes.len() as i64
 }
 
 fn parse_line_i32(line: &str) -> Vec<i32> {

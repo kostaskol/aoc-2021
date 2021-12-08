@@ -3,6 +3,20 @@ use crate::utils;
 const DIM_HOR: usize = 5;
 const DIM_VER: usize = 5;
 
+pub fn run(extra: bool) -> String {
+  let lines = utils::read_lines("inputs/4.txt");
+
+  let (inputs, mut boards) = parse_lines(&lines);
+
+  format!("{}",
+    match extra {
+      true => run_two_stars(&inputs, &mut boards),
+      false => run_one_star(&inputs, &mut boards)
+    }
+  )
+}
+
+
 #[derive(Debug)]
 struct Board {
   board: [[(String, bool);DIM_HOR];DIM_VER],
@@ -72,18 +86,6 @@ impl Board {
   }
 }
 
-pub fn run(extra: bool) {
-  let lines = utils::read_lines("inputs/4.txt");
-
-  let (inputs, mut boards) = parse_lines(&lines);
-
-  if extra {
-    run_two_stars(&inputs, &mut boards);
-  } else {
-    run_one_star(&inputs, &mut boards);
-  }
-}
-
 fn parse_lines(lines: &Vec<String>) -> (Vec<String>, Vec<Board>) {
   let inputs: Vec<String> = lines[0].split(",").map(|s| s.to_string()).collect();
 
@@ -104,23 +106,20 @@ fn parse_lines(lines: &Vec<String>) -> (Vec<String>, Vec<Board>) {
   (inputs, boards)
 }
 
-fn run_one_star(inputs: &Vec<String>, boards: &mut Vec<Board>) {
+fn run_one_star(inputs: &Vec<String>, boards: &mut Vec<Board>) -> i32 {
   let mut found = false;
   for input in inputs {
-    if found {
-      break;
-    }
     for board in &mut *boards {
       if board.new_draw(input.clone()) {
-        println!("{}", board.score(input.clone()));
-        found = true;
-        break;
+        return board.score(input.clone());
       }
     }
   }
+
+  -1
 }
 
-fn run_two_stars(inputs: &Vec<String>, boards: &mut Vec<Board>) {
+fn run_two_stars(inputs: &Vec<String>, boards: &mut Vec<Board>) -> i32 {
   let mut scores = Vec::new();
   for number in inputs {
     for board in &mut *boards {
@@ -135,4 +134,5 @@ fn run_two_stars(inputs: &Vec<String>, boards: &mut Vec<Board>) {
   }
 
   println!("{:?}", scores);
+  1
 }

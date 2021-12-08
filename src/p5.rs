@@ -170,12 +170,6 @@ impl Oceanfloor {
 
     (max_x, max_y)
   }
-
-  fn print(&self) {
-    for row in &self.board {
-      println!("{:?}", row);
-    }
-  }
 }
 
 fn run_two_stars(oceanfloor: &mut Oceanfloor, points: &Vec<(Point, Point)>) -> i32 {

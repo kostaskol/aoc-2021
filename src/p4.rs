@@ -107,7 +107,6 @@ fn parse_lines(lines: &Vec<String>) -> (Vec<String>, Vec<Board>) {
 }
 
 fn run_one_star(inputs: &Vec<String>, boards: &mut Vec<Board>) -> i32 {
-  let mut found = false;
   for input in inputs {
     for board in &mut *boards {
       if board.new_draw(input.clone()) {

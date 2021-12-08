@@ -5,7 +5,7 @@ use crate::utils;
 pub fn run(extra: bool) -> String {
   let input = utils::read_lines("inputs/6.txt");
   let mut school = School::from_input(&input);
-  let input = parse_line_i32(&input[0]);
+  let input = parse_line(&input[0]);
 
   format!("{}",
     match extra {
@@ -50,11 +50,11 @@ impl School {
 
 #[derive(Debug, Copy, Clone)]
 struct Fish {
-  rem: i64
+  rem: i32
 }
 
 impl Fish {
-  fn new(rem: i64) -> Self {
+  fn new(rem: i32) -> Self {
     Self { rem }
   }
 
@@ -96,10 +96,6 @@ fn run_one_star(school: &mut School) -> i64{
   school.fishes.len() as i64
 }
 
-fn parse_line_i32(line: &str) -> Vec<i32> {
+fn parse_line(line: &str) -> Vec<i32> {
   line.split(",").map(|s| s.parse::<i32>().unwrap()).collect()
-}
-
-fn parse_line(line: &str) -> Vec<i64> {
-  line.split(",").map(|s| s.parse::<i64>().unwrap()).collect()
 }

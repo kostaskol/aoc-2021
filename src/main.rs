@@ -11,6 +11,7 @@ mod p6;
 mod p7;
 mod p8;
 mod p9;
+mod p10;
 
 fn main() {
     let matches = App::new("Advent of code!")
@@ -25,7 +26,7 @@ fn main() {
         .get_matches();
 
     let extra_star = matches.is_present("extra");
-    let problem = matches.value_of("problem_number").unwrap_or("9");
+    let problem = matches.value_of("problem_number").unwrap_or("10");
     let answer: String =
         match problem {
             "1" => p1::run(extra_star),
@@ -37,7 +38,8 @@ fn main() {
             "7" => p7::run(extra_star),
             "8" => p8::run(extra_star),
             "9" => p9::run(extra_star),
-            &_ => format!("Only know how to solve #{:?} for now :(", (1..=9))
+            "10" => p10::run(extra_star),
+            &_ => format!("Only know how to solve #{:?} for now :(", (1..=10))
         };
 
     println!("{}", answer);

@@ -25,6 +25,16 @@ enum RunType {
   Reset
 }
 
+impl RunType {
+  fn next(&mut self) {
+    *self = match self {
+      RunType::Increase => RunType::Flash,
+      RunType::Flash => RunType::Reset,
+      RunType::Reset => RunType::Increase
+    }
+  }
+}
+
 impl Octopus {
   fn new(energy: u8) -> Octopus {
     Octopus {
@@ -53,14 +63,6 @@ impl Octopus {
   }
 }
 
-fn next_type(runtype: &mut RunType) {
-  match runtype {
-    RunType::Increase => *runtype = RunType::Flash,
-    RunType::Flash => *runtype = RunType::Reset,
-    RunType::Reset => *runtype = RunType::Increase
-  }
-}
-
 fn run_one_star(mut board: Board<Octopus>) -> i32 {
   let mut total_flashes = 0;
 
@@ -80,7 +82,7 @@ fn run_one_star(mut board: Board<Octopus>) -> i32 {
           }
         }
       }
-      next_type(&mut runtype);
+      runtype.next();
     }
   }
 
@@ -108,7 +110,7 @@ fn run_two_stars(mut board: Board<Octopus>) -> i32 {
           }
         }
       }
-      next_type(&mut runtype);
+      runtype.next();
     }
   }
 }

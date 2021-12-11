@@ -1,8 +1,6 @@
 use std::collections::{HashSet, VecDeque};
 use crate::utils;
-
-type Board = Vec<Vec<(u8, bool)>>;
-type Point = (usize, usize);
+use crate::board::{Point, Board};
 
 pub fn run(extra: bool) -> String {
   let lines = utils::read_lines("inputs/9.txt");
@@ -16,12 +14,14 @@ pub fn run(extra: bool) -> String {
   )
 }
 
-fn run_one_star(mut board: Board) -> i32 {
+fn run_one_star(mut board: Board<(u8, bool)>) -> i32 {
   mark_low_points(&mut board);
 
   let mut risk_level: i32 = 0;
-  for row in board {
-    for cell in row {
+  let dim = board.dim();
+  for i in 0..dim.0 {
+    for j in 0..dim.1 {
+      let cell = board.get((i, j)).unwrap();
       if cell.1 {
         risk_level += (cell.0 as i32) + 1;
       }
@@ -30,7 +30,7 @@ fn run_one_star(mut board: Board) -> i32 {
   risk_level
 }
 
-fn run_two_stars(mut board: Board) -> i32 {
+fn run_two_stars(mut board: Board<(u8, bool)>) -> i32 {
   mark_low_points(&mut board);
   let low_points = find_low_points(&board);
   let mut res = vec![Vec::<Point>::new(); low_points.len()];
@@ -62,12 +62,16 @@ fn run_two_stars(mut board: Board) -> i32 {
   lengths[lengths_len - 3..lengths_len].iter().map(|&e| e as i32).product()
 }
 
-fn get_to_visit(board: &Board, p: &Point, visited: &HashSet<Point>) -> Vec<Point> {
+fn get_to_visit(
+  board: &Board<(u8, bool)>,
+  p: &Point,
+  visited: &HashSet<Point>
+) -> Vec<Point> {
   let mut to_visit = Vec::new();
-  let neighb = neighbours(&board, p.0, p.1);
-  let low_point_val = board[p.0][p.1].0;
+  let neighb = board.get_neighbours(*p, false);
+  let low_point_val = board.get(*p).unwrap().0;
   for n in neighb {
-    let neighb_val = board[n.0][n.1].0;
+    let neighb_val = board.get(n).unwrap().0;
     if !visited.contains(&n)
         && neighb_val != 9
         && neighb_val > low_point_val {
@@ -77,57 +81,40 @@ fn get_to_visit(board: &Board, p: &Point, visited: &HashSet<Point>) -> Vec<Point
   to_visit
 }
 
-fn find_low_points(board: &Board) -> Vec<(usize, usize)> {
-  let mut low_points = Vec::new();
-  for (i, row) in board.iter().enumerate() {
-    for (j, cell) in row.iter().enumerate() {
+fn find_low_points(board: &Board<(u8, bool)>) -> Vec<(usize, usize)> {
+  let mut low_points: Vec<Point> = Vec::new();
+  let dim = board.dim();
+  for i in 0..dim.0 {
+    for j in 0..dim.1 {
+      let cell = board.get((i, j)).unwrap();
       if cell.1 {
         low_points.push((i, j));
       }
     }
   }
+
   low_points
 }
 
-fn mark_low_points(board: &mut Board) {
-  for i in 0..board.len() {
-    for j in 0..board[i].len() {
-      let neighbours = neighbours(&board, i, j);
-      let curr = board[i][j];
+fn mark_low_points(board: &mut Board<(u8, bool)>) {
+  let dim = board.dim();
+  for i in 0..dim.0 {
+    for j in 0..dim.1 {
+      let p = (i, j);
+      let neighbours = board.get_neighbours(p, false);
+      let curr = board.get(p).unwrap();
       let mut lower_neighbour = false;
-      for n in neighbours.iter() {
-        if board[n.0][n.1].0 <= curr.0 {
+      for n in neighbours {
+        if board.get(n).unwrap().0 <= curr.0 {
           lower_neighbour = true;
         }
       }
-      board[i][j].1 = !lower_neighbour;
+      board.get_mut(p).unwrap().1 = lower_neighbour;
     }
   }
 }
 
-fn neighbours(board: &Board, i: usize, j: usize) -> Vec<Point> {
-  let mut neighbours = vec![];
-
-  if i > 0 {
-    neighbours.push((i - 1, j));
-  }
-
-  if i < board.len() - 1 {
-    neighbours.push((i + 1, j));
-  }
-
-  if j > 0 {
-    neighbours.push((i, j - 1));
-  }
-
-  if j < board[i].len() - 1 {
-    neighbours.push((i, j + 1));
-  }
-
-  neighbours
-}
-
-fn parse_board(lines: Vec<String>) -> Board {
+fn parse_board(lines: Vec<String>) -> Board<(u8, bool)> {
   let mut board = vec![];
 
   for line in lines {
@@ -140,5 +127,5 @@ fn parse_board(lines: Vec<String>) -> Board {
     board.push(row);
   }
 
-  board
+  Board::from(board)
 }

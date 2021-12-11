@@ -1,6 +1,17 @@
 use crate::utils;
+use crate::board::{Point, Board};
 
-type Board = Vec<Vec<Octopus>>;
+pub fn run(extra: bool) -> String {
+  let lines = utils::read_lines("inputs/11.txt");
+  let board = parse_board(lines);
+
+  format!("{}",
+    match extra {
+      false => run_one_star(board),
+      true => run_two_stars(board)
+    }
+  )
+}
 
 struct Octopus {
   energy: u8,
@@ -50,31 +61,21 @@ fn next_type(runtype: &mut RunType) {
   }
 }
 
-pub fn run(extra: bool) -> String {
-  let lines = utils::read_lines("inputs/11.txt");
-  let board = parse_board(lines);
-
-  format!("{}",
-    match extra {
-      false => run_one_star(board),
-      true => run_two_stars(board)
-    }
-  )
-}
-
-fn run_one_star(mut board: Board) -> i32 {
+fn run_one_star(mut board: Board<Octopus>) -> i32 {
   let mut total_flashes = 0;
 
   for _ in 0..100 {
     let mut runtype = RunType::Increase;
+    let board_dim = board.dim();
     for _ in 0..3 {
-      for i in 0..board.len() {
-        for j in 0..board[i].len() {
+      for i in 0..board_dim.0 {
+        for j in 0..board_dim.1 {
+          let p = (i, j);
           match runtype {
             RunType::Increase => {
-              board[i][j].gain_energy()
+              board.get_mut(p).unwrap().gain_energy();
             },
-            RunType::Flash => total_flashes += flash(&mut board, i, j),
+            RunType::Flash => total_flashes += flash(&mut board, p),
             RunType::Reset => reset(&mut board)
           }
         }
@@ -86,18 +87,20 @@ fn run_one_star(mut board: Board) -> i32 {
   total_flashes
 }
 
-fn run_two_stars(mut board: Board) -> i32 {
+fn run_two_stars(mut board: Board<Octopus>) -> i32 {
   let mut runtype = RunType::Increase;
   let mut step = 0;
+  let board_dim = board.dim();
   loop {
     step += 1;
     for _ in 0..3 {
-      for i in 0..board.len() {
-        for j in 0..board[i].len() {
+      for i in 0..board_dim.0 {
+        for j in 0..board_dim.1 {
+          let p = (i, j);
           match runtype {
-            RunType::Increase => board[i][j].gain_energy(),
+            RunType::Increase => board.get_mut(p).unwrap().gain_energy(),
             RunType::Flash => {
-              if flash(&mut board, i, j) == 100 {
+              if flash(&mut board, p) == 100 {
                 return step;
               }
             },
@@ -110,71 +113,35 @@ fn run_two_stars(mut board: Board) -> i32 {
   }
 }
 
-fn flash(board: &mut Board, i: usize, j: usize) -> i32 {
-  if !board[i][j].is_ready() {
+fn flash(board: &mut Board<Octopus>, p: Point) -> i32 {
+  if !board.get(p).unwrap().is_ready() {
     return 0;
   }
-  board[i][j].flashed();
+  board.get_mut(p).unwrap().flashed();
 
   let mut total_flashes = 1;
-  let neighbours = get_neighbours(board, i, j);
+  let neighbours = board.get_neighbours(p, true);
 
   for n in neighbours {
-    board[n.0][n.1].gain_energy();
-    total_flashes += flash(board, n.0, n.1);
+    board.get_mut(n).unwrap().gain_energy();
+    total_flashes += flash(board, n);
   }
 
   total_flashes
 }
 
-fn reset(board: &mut Board) {
-  for i in 0..board.len() {
-    for j in 0..board[i].len() {
-      board[i][j].reset();
+fn reset(board: &mut Board<Octopus>) {
+  let dim = board.dim();
+  for i in 0..dim.0 {
+    for j in 0..dim.1 {
+      let p = (i, j);
+      board.get_mut(p).unwrap().reset();
     }
   }
 }
 
-fn get_neighbours(board: &Board, i: usize, j: usize) -> Vec<(usize, usize)> {
-  let mut neighbours = vec![];
-
-  if i > 0 {
-    neighbours.push((i - 1, j));
-
-    if j > 0 {
-      neighbours.push((i - 1, j - 1));
-    }
-
-    if j < board[i].len() - 1 {
-      neighbours.push((i - 1, j + 1));
-    }
-  }
-
-  if i < board.len() - 1 {
-    neighbours.push((i + 1, j));
-
-    if j < board[i].len() - 1 {
-      neighbours.push((i + 1, j + 1));
-    }
-
-    if j > 0 {
-      neighbours.push((i + 1, j - 1));
-    }
-  }
-
-  if j > 0 {
-    neighbours.push((i, j - 1));
-  }
-
-  if j < board[i].len() - 1 {
-    neighbours.push((i, j + 1));
-  }
-
-  neighbours
-}
-
-fn parse_board(lines: Vec<String>) -> Board {
-  let mut board: Board = Vec::new();
+fn parse_board(lines: Vec<String>) -> Board<Octopus> {
+  let mut board: Vec<Vec<Octopus>> = Vec::new();
   for line in lines {
     let mut row: Vec<Octopus> = Vec::new();
     for c in line.chars() {
@@ -182,5 +149,6 @@ fn parse_board(lines: Vec<String>) -> Board {
     }
     board.push(row);
   }
-  board
+
+  Board::<Octopus>::from(board)
 }

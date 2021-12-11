@@ -1,54 +1,55 @@
 use crate::utils;
+use crate::board::{Point, Board};
 
-const DIM_HOR: usize = 5;
-const DIM_VER: usize = 5;
+const BOARD_LENGTH: usize = 5;
 
 pub fn run(extra: bool) -> String {
   let lines = utils::read_lines("inputs/4.txt");
 
-  let (inputs, mut boards) = parse_lines(&lines);
+  let (inputs, boards) = parse_lines(&lines);
 
   format!("{}",
     match extra {
-      true => run_two_stars(&inputs, &mut boards),
-      false => run_one_star(&inputs, &mut boards)
+      true => run_two_stars(&inputs, boards),
+      false => run_one_star(&inputs, boards)
     }
   )
 }
 
-
-#[derive(Debug)]
-struct Board {
-  board: [[(String, bool);DIM_HOR];DIM_VER],
-  indx: i32
+struct BingoBoard {
+  board: Board<(String, bool)>,
+  indx: usize
 }
 
-impl Board {
+impl BingoBoard {
   fn new_draw(&mut self, draw: String) -> bool {
-    for i in 0..DIM_HOR {
-      for j in 0..DIM_VER {
-        if self.board[i][j].0 == draw {
-          return self.mark(i, j);
+    let dim = self.board.dim();
+    for i in 0..dim.0 {
+      for j in 0..dim.1 {
+        let p = (i, j);
+        if self.board.get(p).unwrap().0 == draw {
+          return self.mark(p);
         }
       }
     }
     false
   }
 
-  fn mark(&mut self, i: usize, j: usize) -> bool {
-    self.board[i][j].1 = true;
-    self.check_win(i, j)
+  fn mark(&mut self, p: Point) -> bool {
+    self.board.get_mut(p).unwrap().1 = true;
+    self.check_win(p)
   }
 
-  fn check_win(&self, i: usize, j: usize) -> bool{
-    let hor_win = self.board[i].iter().all(|(_, b)| *b);
+  fn check_win(&self, p: Point) -> bool{
+    let hor_win = self.board.expose()[p.0].iter().all(|(_, b)| *b);
     let mut ver_win = false;
     let mut cnt = 0;
-    for i in 0..DIM_VER {
-      if self.board[i][j].1 {
+    let dim = self.board.dim();
+    for _ in 0..dim.0 {
+      if self.board.get(p).unwrap().1 {
         cnt += 1;
       }
-      ver_win = cnt == DIM_VER;
+      ver_win = cnt == dim.1;
       if ver_win {
         break;
       }
@@ -59,7 +60,7 @@ impl Board {
 
   fn score(&self, latest: String) -> i32 {
     let mut score = 0;
-    for row in self.board.iter() {
+    for row in self.board.expose().iter() {
       for col in row {
         if col.1 == false {
           score += col.0.parse::<i32>().unwrap();
@@ -70,33 +71,33 @@ impl Board {
     score * latest.parse::<i32>().unwrap()
   }
 
-  fn from_lines(lines: &[String], indx: i32) -> Self {
-    let mut b: [[(String, bool);DIM_HOR];DIM_VER] = Default::default();
+  fn from_lines(lines: &[String], indx: usize) -> Self {
+    let mut b = Vec::<Vec::<(String, bool)>>::new();
 
-    for (i, line) in lines.iter().enumerate() {
-      for (j, c) in line.split_whitespace().enumerate() {
-        b[i][j] = (c.to_string(), false);
-      }
+    for row in lines {
+      let data: Vec<(String, bool)> = row.split_whitespace().into_iter().
+                                        map(|e| (e.to_string(), false)).collect();
+      b.push(data);
     }
 
     Self {
-      board: b,
+      board: Board::<(String, bool)>::from(b),
       indx
     }
   }
 }
 
-fn parse_lines(lines: &Vec<String>) -> (Vec<String>, Vec<Board>) {
+fn parse_lines(lines: &Vec<String>) -> (Vec<String>, Vec<BingoBoard>) {
   let inputs: Vec<String> = lines[0].split(",").map(|s| s.to_string()).collect();
 
-  let mut boards = Vec::<Board>::new();
+  let mut boards = Vec::<BingoBoard>::new();
   let mut cnt = 2;
   let mut indx = 0;
 
   loop {
-    boards.push(Board::from_lines(&lines[cnt..cnt+DIM_VER], indx));
+    boards.push(BingoBoard::from_lines(&lines[cnt..cnt+BOARD_LENGTH], indx));
     indx += 1;
-    cnt += DIM_VER + 1; // 1 blank line
+    cnt += BOARD_LENGTH + 1; // 1 blank line
 
     if cnt >= lines.len() {
       break;
@@ -106,9 +107,9 @@ fn parse_lines(lines: &Vec<String>) -> (Vec<String>, Vec<Board>) {
   (inputs, boards)
 }
 
-fn run_one_star(inputs: &Vec<String>, boards: &mut Vec<Board>) -> i32 {
+fn run_one_star(inputs: &Vec<String>, mut boards: Vec<BingoBoard>) -> i32 {
   for input in inputs {
-    for board in &mut *boards {
+    for board in &mut boards.iter_mut() {
       if board.new_draw(input.clone()) {
         return board.score(input.clone());
       }
@@ -118,11 +119,11 @@ fn run_one_star(inputs: &Vec<String>, boards: &mut Vec<Board>) -> i32 {
   -1
 }
 
-fn run_two_stars(inputs: &Vec<String>, boards: &mut Vec<Board>) -> i32 {
-  let mut scores = Vec::new();
+fn run_two_stars(inputs: &Vec<String>, mut boards: Vec<BingoBoard>) -> i32 {
+  let mut scores: Vec<(i32, usize)> = Vec::new();
   for number in inputs {
-    for board in &mut *boards {
-      if scores.iter().map(|s: &(i32, i32)| s.1).collect::<Vec<i32>>().contains(&board.indx) {
+    for board in boards.iter_mut() {
+      if scores.iter().map(|s: &(i32, usize)| s.1).collect::<Vec<usize>>().contains(&board.indx) {
         continue;
       }
       if board.new_draw(number.clone()) {
@@ -132,6 +133,5 @@ fn run_two_stars(inputs: &Vec<String>, boards: &mut Vec<Board>) -> i32 {
     }
   }
 
-  println!("{:?}", scores);
   1
 }

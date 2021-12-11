@@ -3,21 +3,22 @@ use crate::utils;
 type Pointpair = (Point, Point);
 type Pointset = Vec<(Point, Point)>;
 
-pub fn run(extra: bool) -> String {
-  let lines = utils::read_lines("inputs/5.txt");
+pub fn run(extra: bool, test: bool) -> String {
+  let lines = utils::read_lines(&utils::inp_file("5", test));
   let points: Pointset = Point::from_lines(&lines);
-  let mut oceanfloor = Oceanfloor::new(&points);
+  let oceanfloor = Oceanfloor::new(&points);
 
   format!("{}",
     match extra {
-      true => run_two_stars(&mut oceanfloor, &points),
-      false => run_one_star(&mut oceanfloor, &points),
+      true => p1::run(oceanfloor, points),
+      false => p2::run(oceanfloor, points),
     }
   )
 }
 
+// TODO: Remove this and use Board::Point
 #[derive(Debug, Copy, Clone)]
-struct Point {
+pub struct Point {
   x: i32,
   y: i32
 }
@@ -49,7 +50,7 @@ impl Point {
     }
   }
 
-  fn interval(p1: &Self, p2: &Self, diagonals: bool) -> Vec<Self> {
+  fn interval(p1: Self, p2: Self, diagonals: bool) -> Vec<Self> {
     if p1.x == p2.x {
       let mut points = Vec::new();
       let (mut x, mut y) = (p1.y, p2.y);
@@ -109,7 +110,7 @@ impl Point {
     ===
     (1, 0), (2, 1), (3, 2), (4, 3)
        */
-      let mut points = vec![*p1, *p2];
+      let mut points = vec![p1, p2];
 
       let mut i = p1.x;
       let mut j = p1.y;
@@ -133,7 +134,7 @@ impl Point {
       }
 
       points.retain(|p| p.x != p1.x && p.y != p1.y);
-      points.push(*p1);
+      points.push(p1);
 
       return points;
     } else {
@@ -142,7 +143,8 @@ impl Point {
   }
 }
 
-struct Oceanfloor {
+// TODO: Replace this with board::Board<u8>
+pub struct Oceanfloor {
   board: Vec<Vec<u8>>
 }
 
@@ -172,24 +174,6 @@ impl Oceanfloor {
   }
 }
 
-fn run_two_stars(oceanfloor: &mut Oceanfloor, points: &Vec<(Point, Point)>) -> i32 {
-  for (p1, p2) in points {
-    let interval = Point::interval(p1, p2, true);
-    apply_points(oceanfloor, interval);
-  }
-
-  count_twos(oceanfloor)
-}
-
-fn run_one_star(oceanfloor: &mut Oceanfloor, points: &Vec<(Point, Point)>) -> i32 {
-  for (p1, p2) in points {
-    let interval = Point::interval(p1, p2, false);
-    apply_points(oceanfloor, interval);
-  }
-
-  count_twos(oceanfloor)
-}
-
 fn count_twos(oceanfloor: &Oceanfloor) -> i32 {
   let mut twos = 0;
   for row in oceanfloor.board.iter() {
@@ -210,3 +194,29 @@ fn apply_points(oceanfloor: &mut Oceanfloor, points: Vec<Point>) {
   }
 }
 
+
+mod p2 {
+  use super::{Oceanfloor, Point, apply_points, count_twos};
+
+  pub fn run(mut oceanfloor: Oceanfloor, points: Vec<(Point, Point)>) -> i32 {
+    for (p1, p2) in points {
+      let interval = Point::interval(p1, p2, true);
+      apply_points(&mut oceanfloor, interval);
+    }
+
+    count_twos(&oceanfloor)
+  }
+}
+
+mod p1 {
+  use super::{Oceanfloor, Point, apply_points, count_twos};
+
+  pub fn run(mut oceanfloor: Oceanfloor, points: Vec<(Point, Point)>) -> i32 {
+    for (p1, p2) in points {
+      let interval = Point::interval(p1, p2, false);
+      apply_points(&mut oceanfloor, interval);
+    }
+
+    count_twos(&oceanfloor)
+  }
+}

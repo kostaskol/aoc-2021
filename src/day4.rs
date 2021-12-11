@@ -3,20 +3,20 @@ use crate::board::{Point, Board};
 
 const BOARD_LENGTH: usize = 5;
 
-pub fn run(extra: bool) -> String {
-  let lines = utils::read_lines("inputs/4.txt");
+pub fn run(extra: bool, test: bool) -> String {
+  let lines = utils::read_lines(&utils::inp_file("4", test));
 
   let (inputs, boards) = parse_lines(&lines);
 
   format!("{}",
     match extra {
-      true => run_two_stars(&inputs, boards),
-      false => run_one_star(&inputs, boards)
+      true => p1::run(inputs, boards),
+      false => p2::run(inputs, boards)
     }
   )
 }
 
-struct BingoBoard {
+pub struct BingoBoard {
   board: Board<(String, bool)>,
   indx: usize
 }
@@ -107,31 +107,39 @@ fn parse_lines(lines: &Vec<String>) -> (Vec<String>, Vec<BingoBoard>) {
   (inputs, boards)
 }
 
-fn run_one_star(inputs: &Vec<String>, mut boards: Vec<BingoBoard>) -> i32 {
-  for input in inputs {
-    for board in &mut boards.iter_mut() {
-      if board.new_draw(input.clone()) {
-        return board.score(input.clone());
+mod p1 {
+  use super::BingoBoard;
+
+  pub fn run(inputs: Vec<String>, mut boards: Vec<BingoBoard>) -> i32 {
+    for input in inputs {
+      for board in &mut boards.iter_mut() {
+        if board.new_draw(input.clone()) {
+          return board.score(input.clone());
+        }
       }
     }
-  }
 
-  -1
+    -1
+  }
 }
 
-fn run_two_stars(inputs: &Vec<String>, mut boards: Vec<BingoBoard>) -> i32 {
-  let mut scores: Vec<(i32, usize)> = Vec::new();
-  for number in inputs {
-    for board in boards.iter_mut() {
-      if scores.iter().map(|s: &(i32, usize)| s.1).collect::<Vec<usize>>().contains(&board.indx) {
-        continue;
-      }
-      if board.new_draw(number.clone()) {
-        let score = board.score(number.clone());
-        scores.push((score, board.indx));
+mod p2 {
+  use super::BingoBoard;
+
+  pub fn run(inputs: Vec<String>, mut boards: Vec<BingoBoard>) -> i32 {
+    let mut scores: Vec<(i32, usize)> = Vec::new();
+    for number in inputs {
+      for board in boards.iter_mut() {
+        if scores.iter().map(|s: &(i32, usize)| s.1).collect::<Vec<usize>>().contains(&board.indx) {
+          continue;
+        }
+        if board.new_draw(number.clone()) {
+          let score = board.score(number.clone());
+          scores.push((score, board.indx));
+        }
       }
     }
-  }
 
-  1
+    1
+  }
 }

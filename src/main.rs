@@ -4,9 +4,9 @@ use clap::{Arg, App};
 mod utils;
 mod board;
 
-mod p1; mod p2; mod p3; mod p4;
-mod p5; mod p6; mod p7; mod p8;
-mod p9; mod p10; mod p11;
+mod day1; mod day2; mod day3; mod day4;
+mod day5; mod day6; mod day7; mod day8;
+mod day9; mod day10; mod day11;
 
 fn main() {
     let matches = App::new("Advent of code!")
@@ -18,23 +18,28 @@ fn main() {
                 .short('p')
                 .long("problem")
                 .takes_value(true))
+        .arg(Arg::new("test_input")
+                .short('t')
+                .long("test")
+                .takes_value(false))
         .get_matches();
 
     let extra_star = matches.is_present("extra");
+    let test_input = matches.is_present("test_input");
     let problem = matches.value_of("problem_number").unwrap_or("11");
     let answer: String =
         match problem {
-            "1" => p1::run(extra_star),
-            "2" => p2::run(extra_star),
-            "3" => p3::run(extra_star),
-            "4" => p4::run(extra_star),
-            "5" => p5::run(extra_star),
-            "6" => p6::run(extra_star),
-            "7" => p7::run(extra_star),
-            "8" => p8::run(extra_star),
-            "9" => p9::run(extra_star),
-            "10" => p10::run(extra_star),
-            "11" => p11::run(extra_star),
+            "1" => day1::run(extra_star, test_input),
+            "2" => day2::run(extra_star, test_input),
+            "3" => day3::run(extra_star, test_input),
+            "4" => day4::run(extra_star, test_input),
+            "5" => day5::run(extra_star, test_input),
+            "6" => day6::run(extra_star, test_input),
+            "7" => day7::run(extra_star, test_input),
+            "8" => day8::run(extra_star, test_input),
+            "9" => day9::run(extra_star, test_input),
+            "10" => day10::run(extra_star, test_input),
+            "11" => day11::run(extra_star, test_input),
             &_ => format!("Only know how to solve #{:?} for now :(", (1..=11))
         };
 

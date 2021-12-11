@@ -12,3 +12,12 @@ pub fn convert_to_ints(lines: &Vec<String>) -> Vec<i32> {
     unwrap_or_else(|_| panic!("{} is not a number", s)))
     .collect()
 }
+
+pub fn inp_file(day: &str, test: bool) -> String {
+    format!("inputs/{}.txt",
+        match test {
+            true => "test",
+            false => day
+        }
+    )
+}

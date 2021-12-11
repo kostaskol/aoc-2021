@@ -2,16 +2,10 @@ extern crate clap;
 use clap::{Arg, App};
 
 mod utils;
-mod p1;
-mod p2;
-mod p3;
-mod p4;
-mod p5;
-mod p6;
-mod p7;
-mod p8;
-mod p9;
-mod p10;
+
+mod p1; mod p2; mod p3; mod p4;
+mod p5; mod p6; mod p7; mod p8;
+mod p9; mod p10; mod p11;
 
 fn main() {
     let matches = App::new("Advent of code!")
@@ -26,7 +20,7 @@ fn main() {
         .get_matches();
 
     let extra_star = matches.is_present("extra");
-    let problem = matches.value_of("problem_number").unwrap_or("10");
+    let problem = matches.value_of("problem_number").unwrap_or("11");
     let answer: String =
         match problem {
             "1" => p1::run(extra_star),
@@ -39,7 +33,8 @@ fn main() {
             "8" => p8::run(extra_star),
             "9" => p9::run(extra_star),
             "10" => p10::run(extra_star),
-            &_ => format!("Only know how to solve #{:?} for now :(", (1..=10))
+            "11" => p11::run(extra_star),
+            &_ => format!("Only know how to solve #{:?} for now :(", (1..=11))
         };
 
     println!("{}", answer);

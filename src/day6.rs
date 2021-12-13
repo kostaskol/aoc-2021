@@ -6,7 +6,7 @@ pub fn run(extra: bool, test: bool) -> String {
   format!("{}",
     match extra {
       false => {
-        p1::run(School::from_input(&input))
+        p1::run(School::from_input(input))
       },
       true => {
         p2::run(parse_line(&input[0]))
@@ -37,7 +37,7 @@ impl School {
     self.fishes = new_fishes;
   }
 
-  fn from_input(input: &Vec<String>) -> School {
+  fn from_input(input: Vec<String>) -> School {
     let lifetimes = parse_line(&input[0]);
 
     let mut school = School::new();
@@ -73,14 +73,14 @@ impl Fish {
 }
 
 fn parse_line(line: &str) -> Vec<i32> {
-  line.split(",").map(|s| s.parse::<i32>().unwrap()).collect()
+  line.split(',').map(|s| s.parse::<i32>().unwrap()).collect()
 }
 
 mod p2 {
   use std::collections::VecDeque;
 
   pub fn run(input: Vec<i32>) -> i64 {
-    let mut pipeline = VecDeque::from(vec![0 as i64; 9]);
+    let mut pipeline = VecDeque::from(vec![0_i64; 9]);
     for i in input {
       pipeline[i as usize] += 1;
     }

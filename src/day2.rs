@@ -2,7 +2,7 @@ use crate::utils;
 
 pub fn run(extra: bool, test: bool) -> String {
   let input = utils::read_lines(&utils::inp_file("2", test));
-  let directions = Direction::parse(&input);
+  let directions = Direction::parse(input);
 
   format!("{}",
     match extra {
@@ -19,11 +19,11 @@ pub enum Direction {
 }
 
 impl Direction {
-  fn parse(input: &Vec<String>) -> Vec<Self> {
+  fn parse(input: Vec<String>) -> Vec<Self> {
     let mut directions: Vec<Self> = Vec::new();
 
     for line in input {
-      let split_line: Vec<&str> = line.split(" ").collect();
+      let split_line: Vec<&str> = line.split_whitespace().collect();
       let dir = split_line[0];
       let distance = split_line[1].parse::<u32>().unwrap();
 

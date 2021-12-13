@@ -136,10 +136,10 @@ mod p2 {
       // Five refers to digit length and not the number
       let fives = digits[4].clone();
       for five in fives.iter() {
-        if contains(&five, &one) {
+        if contains(five, one) {
           // 3
           numbers[2] = five;
-        } else if contains(&five, &l) {
+        } else if contains(five, &l) {
           // 5
           numbers[4] = five;
         } else {
@@ -150,10 +150,10 @@ mod p2 {
 
       let sixes = digits[5].clone();
       for six in sixes.iter() {
-        if contains(&six, &four) {
+        if contains(six, four) {
           // 9
           numbers[8] = six;
-        } else if contains(&six, &l) {
+        } else if contains(six, &l) {
           // 6
           numbers[5] = six;
         } else {
@@ -168,7 +168,7 @@ mod p2 {
 
           if sort(digit.to_string()) == *num {
             if i == 9 {
-              res_digit.push_str("0");
+              res_digit.push('0');
             } else {
               res_digit.push_str(&(i + 1).to_string());
             }
@@ -198,7 +198,7 @@ mod p2 {
 
   fn sort(digit: String) -> String {
     let mut digit = digit.chars().collect::<Vec<char>>();
-    digit.sort();
+    digit.sort_unstable();
     digit.iter().collect::<String>()
   }
 

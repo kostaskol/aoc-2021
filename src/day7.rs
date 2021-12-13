@@ -13,7 +13,7 @@ pub fn run(extra: bool, test: bool) -> String {
 }
 
 fn parse_line(line: &str) -> Vec<i32> {
-  line.split(",").map(|s| s.parse::<i32>().unwrap()).collect()
+  line.split(',').map(|s| s.parse::<i32>().unwrap()).collect()
 }
 
 mod p1 {
@@ -28,8 +28,15 @@ mod p1 {
     }
 
     let mut min = i32::MAX;
+    // This isn't actually needless range looping since
+    // we want to loop all rows for each column at a time.
+    // This cannot be done with iterators unless
+    // we transpose the matrix but this isn't trivial in rust
+    #[allow(clippy::needless_range_loop)]
     for i in 0..fuel[0].len() {
       let mut sum = 0;
+      // See comment above for why we allow this
+      #[allow(clippy::needless_range_loop)]
       for j in 0..fuel.len() {
         sum += fuel[j][i];
       }
@@ -55,7 +62,14 @@ mod p2 {
       }
     }
 
+    // This isn't actually needless range looping since
+    // we want to loop all rows for each column at a time.
+    // This cannot be done with iterators unless
+    // we transpose the matrix but this isn't trivial in rust
+    #[allow(clippy::needless_range_loop)]
     let mut min = i32::MAX;
+    // See comment above for why we allow this
+    #[allow(clippy::needless_range_loop)]
     for i in 0..fuel[0].len() {
       let mut sum = 0;
       for j in 0..fuel.len() {

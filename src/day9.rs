@@ -100,7 +100,7 @@ mod p2 {
     }
 
     let mut lengths = res.iter().map(|e| e.len()).collect::<Vec<usize>>();
-    lengths.sort();
+    lengths.sort_unstable();
     let lengths_len = lengths.len();
     lengths[lengths_len - 3..lengths_len].iter().map(|&e| e as i32).product()
   }

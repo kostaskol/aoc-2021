@@ -1,11 +1,12 @@
 use crate::utils;
+use crate::board::Point;
 
 type Pointpair = (Point, Point);
 type Pointset = Vec<(Point, Point)>;
 
 pub fn run(extra: bool, test: bool) -> String {
   let lines = utils::read_lines(&utils::inp_file("5", test));
-  let points: Pointset = Point::from_lines(&lines);
+  let points: Pointset = from_lines(lines);
   let oceanfloor = Oceanfloor::new(&points);
 
   format!("{}",
@@ -16,130 +17,87 @@ pub fn run(extra: bool, test: bool) -> String {
   )
 }
 
-// TODO: Remove this and use Board::Point
-#[derive(Debug, Copy, Clone)]
-pub struct Point {
-  x: i32,
-  y: i32
+fn from_lines(lines: Vec<String>) -> Pointset {
+  let mut points = Vec::new();
+  for line in lines {
+    points.push(parse_pair(&line));
+  }
+
+  points
 }
 
-impl Point {
-  fn from_lines(lines: &Vec<String>) -> Pointset {
+fn parse_pair(line: &str) -> Pointpair {
+  let points = line.split(" -> ").map(|s| s.to_string()).collect::<Vec<String>>();
+  let p1 = parse(&points, 0);
+  let p2 = parse(&points, 1);
+
+  (p1, p2)
+}
+
+fn parse(points: &[String], indx: usize) -> Point {
+  let coords: Vec<usize> = points[indx].split(',').map(|s| s.parse::<usize>().unwrap()).collect();
+
+  (coords[0], coords[1])
+}
+
+fn interval(p1: Point, p2: Point, diagonals: bool) -> Vec<Point> {
+  if p1.0 == p2.0 {
     let mut points = Vec::new();
-    for line in lines {
-      points.push(Self::parse_pair(&line));
+    let (mut x, mut y) = (p1.1, p2.1);
+
+    if x > y {
+      std::mem::swap(&mut x, &mut y);
     }
+
+    for i in x..=y {
+      points.push((p1.1, i));
+    }
+    return points;
+  }
+
+  if p1.1 == p2.1 {
+    let mut points = Vec::new();
+    let (mut x, mut y) = (p1.0, p2.0);
+
+    if x > y {
+      std::mem::swap(&mut x, &mut y);
+    }
+    for i in x..=y {
+      points.push((i, p1.1));
+    }
+    return points;
+  }
+
+  if diagonals {
+    let mut points = vec![p1, p2];
+
+    let mut i = p1.0;
+    let mut j = p1.1;
+
+    let down_x = p1.0 > p2.0;
+    let down_y = p1.1 > p2.1;
+
+    while (i != p2.0) && (j != p2.1) {
+      points.push((i, j));
+      if down_x {
+        i -= 1;
+      } else {
+        i += 1;
+      }
+
+      if down_y {
+        j -= 1;
+      } else {
+        j += 1;
+      }
+    }
+
+    points.retain(|p| p.0 != p1.0 && p.1 != p1.1);
+    points.push(p1);
 
     points
-  }
-
-  fn parse_pair(line: &str) -> Pointpair {
-    let points = line.split(" -> ").map(|s| s.to_string()).collect::<Vec<String>>();
-    let p1 = Self::parse(&points, 0);
-    let p2 = Self::parse(&points, 1);
-
-    (p1, p2)
-  }
-
-  fn parse(points: &Vec<String>, indx: usize) -> Self {
-    let coords = points[indx].split(",").map(|s| s.parse::<i32>().unwrap()).collect::<Vec<i32>>();
-
-    Self {
-      y: coords[0],
-      x: coords[1]
-    }
-  }
-
-  fn interval(p1: Self, p2: Self, diagonals: bool) -> Vec<Self> {
-    if p1.x == p2.x {
-      let mut points = Vec::new();
-      let (mut x, mut y) = (p1.y, p2.y);
-
-      if x > y {
-        let c = x;
-        x = y;
-        y = c;
-      }
-
-      for i in x..=y {
-        points.push( Self { x: p1.x, y: i });
-      }
-      return points;
-    }
-
-    if p1.y == p2.y {
-      let mut points = Vec::new();
-      let (mut x, mut y) = (p1.x, p2.x);
-
-      if x > y {
-        let c = x;
-        x = y;
-        y = c;
-      }
-      for i in x..=y {
-        points.push(Self { x: i, y: p1.y });
-      }
-      return points;
-    }
-
-    if diagonals {
-      /*
-      (0, 8) -> (8, 0)
-      ===
-      [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8)]
-
-      (2, 8) -> (8, 2)
-      ===
-      [(2, 8), (3, 7), (4, 6), (5, 5), (6, 4), (7, 3), (8, 2)]
-
-      (0, 2) -> (4, 6)
-      (0, 2), (1, 3), (2, 4), (3, 5), (4, 6)
-
-      0 1 2 3 4 5 6 7 8
-    0 . . . . . . . . .
-    1 . . . . . . . . .
-    2 . . . . . . . . 1
-    3 . . . . . . . . .
-    4 . . . . . . . . .
-    5 . . . . . 1 . . .
-    6 . . . . . . . . .
-    7 . . . . . . . . .
-    8 . . . . . . . . .
-
-    (1, 0) -> (4, 3)
-    ===
-    (1, 0), (2, 1), (3, 2), (4, 3)
-       */
-      let mut points = vec![p1, p2];
-
-      let mut i = p1.x;
-      let mut j = p1.y;
-
-      let down_x = p1.x > p2.x;
-      let down_y = p1.y > p2.y;
-
-      while (i != p2.x) && (j != p2.y) {
-        points.push(Self { x: i, y: j });
-        if down_x {
-          i -= 1;
-        } else {
-          i += 1;
-        }
-
-        if down_y {
-          j -= 1;
-        } else {
-          j += 1;
-        }
-      }
-
-      points.retain(|p| p.x != p1.x && p.y != p1.y);
-      points.push(p1);
-
-      return points;
-    } else {
-      vec![]
-    }
+  } else {
+    vec![]
   }
 }
 
@@ -149,10 +107,17 @@ pub struct Oceanfloor {
 }
 
 impl Oceanfloor {
+  /*
+    This is a warning because Vec<Point> is aliased as Pointset.
+    Because we want Pointset to be returned from a function as well,
+    it can't be an alias to [Point] (as suggested by clippy). Perhaps a
+    refactoring to make Pointset an actual struct would make sense here
+  */
+  #[allow(clippy::ptr_arg)]
   fn new(points: &Pointset) -> Self {
     let mut board: Vec<Vec<u8>> = Vec::new();
 
-    let (max_x, max_y) = Self::get_max_coords(&points);
+    let (max_x, max_y) = Self::get_max_coords(points);
 
     for _ in 0..max_x {
       board.push(vec![0; max_y as usize]);
@@ -161,11 +126,18 @@ impl Oceanfloor {
     Self { board }
   }
 
-  fn get_max_coords(points: &Pointset) -> (i32, i32) {
-    let max_p1_x = points.iter().map(|(p1, _)| p1.x).max().unwrap();
-    let max_p2_x = points.iter().map(|(_, p2)| p2.x).max().unwrap();
-    let max_p1_y = points.iter().map(|(p1, _)| p1.y).max().unwrap();
-    let max_p2_y = points.iter().map(|(_, p2)| p2.y).max().unwrap();
+  /*
+    This is a warning because Vec<Point> is aliased as Pointset.
+    Because we want Pointset to be returned from a function as well,
+    it can't be an alias to [Point] (as suggested by clippy). Perhaps a
+    refactoring to make Pointset an actual struct would make sense here
+  */
+  #[allow(clippy::ptr_arg)]
+  fn get_max_coords(points: &Pointset) -> (usize, usize) {
+    let max_p1_x = points.iter().map(|(p1, _)| p1.0).max().unwrap();
+    let max_p2_x = points.iter().map(|(_, p2)| p2.0).max().unwrap();
+    let max_p1_y = points.iter().map(|(p1, _)| p1.1).max().unwrap();
+    let max_p2_y = points.iter().map(|(_, p2)| p2.1).max().unwrap();
 
     let max_x = *vec![max_p1_x, max_p2_x].iter().max().unwrap() + 1;
     let max_y = *vec![max_p1_y, max_p2_y].iter().max().unwrap() + 1;
@@ -188,19 +160,19 @@ fn count_twos(oceanfloor: &Oceanfloor) -> i32 {
 
 fn apply_points(oceanfloor: &mut Oceanfloor, points: Vec<Point>) {
   for point in points {
-    let Point {x, y} = point;
+    let (x, y) = point;
 
-    oceanfloor.board[x as usize][y as usize] += 1;
+    oceanfloor.board[x][y] += 1;
   }
 }
 
 
 mod p2 {
-  use super::{Oceanfloor, Point, apply_points, count_twos};
+  use super::{Oceanfloor, Point, apply_points, count_twos, interval};
 
   pub fn run(mut oceanfloor: Oceanfloor, points: Vec<(Point, Point)>) -> i32 {
     for (p1, p2) in points {
-      let interval = Point::interval(p1, p2, true);
+      let interval = interval(p1, p2, true);
       apply_points(&mut oceanfloor, interval);
     }
 
@@ -209,11 +181,11 @@ mod p2 {
 }
 
 mod p1 {
-  use super::{Oceanfloor, Point, apply_points, count_twos};
+  use super::{Oceanfloor, Point, apply_points, count_twos, interval};
 
   pub fn run(mut oceanfloor: Oceanfloor, points: Vec<(Point, Point)>) -> i32 {
     for (p1, p2) in points {
-      let interval = Point::interval(p1, p2, false);
+      let interval = interval(p1, p2, false);
       apply_points(&mut oceanfloor, interval);
     }
 

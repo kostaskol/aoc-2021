@@ -23,9 +23,9 @@ fn create_graph(input: Vec<String>) -> Graph {
     let from = split_line[0].to_string();
     let to = split_line[1].to_string();
 
-    graph.entry(from.clone()).or_insert(vec![]).push(to.clone());
+    graph.entry(from.clone()).or_insert_with(Vec::new).push(to.clone());
     if from != "start" {
-      graph.entry(to).or_insert(vec![]).push(from);
+      graph.entry(to).or_insert_with(Vec::new).push(from);
     }
   }
 
@@ -110,7 +110,7 @@ mod p2 {
       all_paths.push(path.clone());
     } else if let Some(next_set) = graph.get(&node) {
       if node.to_lowercase() == node {
-        if node == protected.0 && protected.1 == false {
+        if node == protected.0 && !protected.1 {
           protected.1 = true;
         } else {
           visited.insert(node.clone());

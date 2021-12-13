@@ -113,12 +113,12 @@ mod p2 {
         while let Some(popped_symbol) = stack.pop_front() {
           let matching_sym = pairs.get(&popped_symbol).unwrap();
           score *= 5;
-          score += score_table.get(&matching_sym).unwrap_or(&0);
+          score += score_table.get(matching_sym).unwrap_or(&0);
         }
         scores.push(score);
       }
     }
-    scores.sort();
+    scores.sort_unstable();
     scores[scores.len() / 2]
   }
 

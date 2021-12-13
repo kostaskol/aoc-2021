@@ -6,7 +6,7 @@ const BOARD_LENGTH: usize = 5;
 pub fn run(extra: bool, test: bool) -> String {
   let lines = utils::read_lines(&utils::inp_file("4", test));
 
-  let (inputs, boards) = parse_lines(&lines);
+  let (inputs, boards) = parse_lines(lines);
 
   format!("{}",
     match extra {
@@ -62,7 +62,7 @@ impl BingoBoard {
     let mut score = 0;
     for row in self.board.expose().iter() {
       for col in row {
-        if col.1 == false {
+        if !col.1 {
           score += col.0.parse::<i32>().unwrap();
         }
       }
@@ -87,8 +87,8 @@ impl BingoBoard {
   }
 }
 
-fn parse_lines(lines: &Vec<String>) -> (Vec<String>, Vec<BingoBoard>) {
-  let inputs: Vec<String> = lines[0].split(",").map(|s| s.to_string()).collect();
+fn parse_lines(lines: Vec<String>) -> (Vec<String>, Vec<BingoBoard>) {
+  let inputs: Vec<String> = lines[0].split(',').map(|s| s.to_string()).collect();
 
   let mut boards = Vec::<BingoBoard>::new();
   let mut cnt = 2;
@@ -114,7 +114,7 @@ mod p1 {
     for input in inputs {
       for board in &mut boards.iter_mut() {
         if board.new_draw(input.clone()) {
-          return board.score(input.clone());
+          return board.score(input);
         }
       }
     }
@@ -130,7 +130,7 @@ mod p2 {
     let mut scores: Vec<(i32, usize)> = Vec::new();
     for number in inputs {
       for board in boards.iter_mut() {
-        if scores.iter().map(|s: &(i32, usize)| s.1).collect::<Vec<usize>>().contains(&board.indx) {
+        if scores.iter().map(|s: &(i32, usize)| s.1).any(|e| e == board.indx) {
           continue;
         }
         if board.new_draw(number.clone()) {

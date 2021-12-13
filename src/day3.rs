@@ -4,7 +4,7 @@ type Binset = Vec<Bin>;
 
 pub fn run(extra: bool, test: bool) -> String {
   let lines = utils::read_lines(&utils::inp_file("3", test));
-  let binary = Bin::from_input(&lines);
+  let binary = Bin::from_input(lines);
 
   format!("{}",
     match extra {
@@ -20,7 +20,7 @@ pub struct Bin {
 }
 
 impl Bin {
-  fn from_input(input: &Vec<String>) -> Binset {
+  fn from_input(input: Vec<String>) -> Binset {
     let mut bitset = Vec::new();
     for line in input {
       let digits = line.chars().map(|s| s.to_string());
@@ -50,6 +50,13 @@ impl Bin {
   }
 }
 
+/*
+  This is a warning because Vec<Bin> is aliased as Binset.
+  Because we want Binset to be returned from a function as well,
+  it can't be an alias to [Bin] (as suggested by clippy). Perhaps a
+  refactoring to make Binset an actual struct would make sense here
+ */
+#[allow(clippy::ptr_arg)]
 fn count_bits(binary: &Binset, indx: usize) -> (usize, usize) {
   let mut ones = 0;
   let mut zeroes = 0;
@@ -100,6 +107,13 @@ mod p2 {
     solve_1s(&bitset) * solve_0s(&bitset)
   }
 
+  /*
+    This is a warning because Vec<Bin> is aliased as Binset.
+    Because we want Binset to be returned from a function as well,
+    it can't be an alias to [Bin] (as suggested by clippy). Perhaps a
+    refactoring to make Binset an actual struct would make sense here
+  */
+  #[allow(clippy::ptr_arg)]
   fn solve_0s(binary: &Binset) -> isize {
     let byte_size = binary[0].len();
     let mut prev_binary = binary.clone();
@@ -130,6 +144,13 @@ mod p2 {
     answer[0].to_decimal()
   }
 
+  /*
+    This is a warning because Vec<Bin> is aliased as Binset.
+    Because we want Binset to be returned from a function as well,
+    it can't be an alias to [Bin] (as suggested by clippy). Perhaps a
+    refactoring to make Binset an actual struct would make sense here
+  */
+  #[allow(clippy::ptr_arg)]
   fn solve_1s(binary: &Binset) -> isize {
     let byte_size = binary[0].len();
     let mut prev_binary = binary.clone();

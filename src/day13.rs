@@ -73,19 +73,16 @@ fn parse_input(lines: Vec<String>) -> (HashSet<Point>, Vec<Fold>) {
     if points_section {
       let split: Vec<&str> = line.split(',').collect();
       points.insert((split[1].parse::<usize>().unwrap(), split[0].parse::<usize>().unwrap()));
-    } else {
+    } else if let Some(x) = regex.captures(&line) {
+      let val = x.name("value").unwrap().as_str().parse::<usize>().unwrap();
+      let axis = x.name("axis").unwrap().as_str();
+      let fold = match axis {
+        "x" => Fold::X(val),
+        "y" => Fold::Y(val),
+        &_ => unreachable!()
+      };
 
-      if let Some(x) = regex.captures(&line) {
-        let val = x.name("value").unwrap().as_str().parse::<usize>().unwrap();
-        let axis = x.name("axis").unwrap().as_str();
-        let fold = match axis {
-          "x" => Fold::X(val),
-          "y" => Fold::Y(val),
-          &_ => unreachable!()
-        };
-
-        folds.push(fold)
-      }
+      folds.push(fold)
     }
   }
 
@@ -171,7 +168,7 @@ mod p2 {
 
 
     let board: Board<char> = Board::from_points(
-      &(curr_points.into_iter().collect()),
+      &(curr_points.into_iter().collect::<Vec<Point>>()),
       '.', '#'
     );
     for row in board.expose() {

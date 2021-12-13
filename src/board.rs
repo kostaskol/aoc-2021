@@ -67,6 +67,22 @@ impl<T> Board<T> {
   }
 }
 
+impl<T> Board<T>
+  where T: Clone {
+  pub fn from_points(points: &Vec<Point>, empty_val: T, full_val: T) -> Self {
+    let max_x = points.iter().map(|e| e.0).max().unwrap() + 1;
+    let max_y = points.iter().map(|e| e.1).max().unwrap() + 1;
+
+    let mut board = vec![vec![empty_val; max_y]; max_x];
+
+    for point in points {
+      board[point.0][point.1] = full_val.clone();
+    }
+
+    Board(board)
+  }
+}
+
 #[cfg(test)]
 mod test {
   use super::Board;

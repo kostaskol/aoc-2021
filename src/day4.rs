@@ -1,17 +1,17 @@
-use crate::utils;
+use crate::utils::read_file;
 use crate::board::{Point, Board};
 
 const BOARD_LENGTH: usize = 5;
 
 pub fn run(extra: bool, test: bool) -> String {
-  let lines = utils::read_lines(&utils::inp_file("4", test));
+  let lines = read_file("4", test);
 
   let (inputs, boards) = parse_lines(lines);
 
   format!("{}",
     match extra {
-      true => p1::run(inputs, boards),
-      false => p2::run(inputs, boards)
+      false => p1::run(inputs, boards),
+      true => p2::run(inputs, boards)
     }
   )
 }
@@ -22,7 +22,7 @@ pub struct BingoBoard {
 }
 
 impl BingoBoard {
-  fn new_draw(&mut self, draw: String) -> bool {
+  fn new_draw(&mut self, draw: &str) -> bool {
     let dim = self.board.dim();
     for i in 0..dim.0 {
       for j in 0..dim.1 {
@@ -58,7 +58,7 @@ impl BingoBoard {
     hor_win || ver_win
   }
 
-  fn score(&self, latest: String) -> i32 {
+  fn score(&self, latest: &str) -> i32 {
     let mut score = 0;
     for row in self.board.expose().iter() {
       for col in row {
@@ -111,9 +111,9 @@ mod p1 {
   use super::BingoBoard;
 
   pub fn run(inputs: Vec<String>, mut boards: Vec<BingoBoard>) -> i32 {
-    for input in inputs {
+    for input in inputs.iter() {
       for board in &mut boards.iter_mut() {
-        if board.new_draw(input.clone()) {
+        if board.new_draw(input) {
           return board.score(input);
         }
       }
@@ -133,8 +133,8 @@ mod p2 {
         if scores.iter().map(|s: &(i32, usize)| s.1).any(|e| e == board.indx) {
           continue;
         }
-        if board.new_draw(number.clone()) {
-          let score = board.score(number.clone());
+        if board.new_draw(&number) {
+          let score = board.score(&number);
           scores.push((score, board.indx));
         }
       }
@@ -143,3 +143,5 @@ mod p2 {
     1
   }
 }
+
+// TODO: Fix and write tests

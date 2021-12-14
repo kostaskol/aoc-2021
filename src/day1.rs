@@ -1,13 +1,13 @@
 use crate::utils;
 
 pub fn run(extra: bool, test: bool) -> String {
-  let lines = utils::read_lines(&utils::inp_file("1", test));
+  let lines = utils::read_file("1", test);
   let input: Vec<i32> = utils::convert_to_ints(&lines);
 
   format!("{}",
     match extra {
-      true => p1::run(input),
-      false => p2::run(input)
+      false => p1::run(input),
+      true => p2::run(input)
     }
   )
 }
@@ -43,5 +43,20 @@ mod p2 {
     }
 
     cnt
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::run;
+
+  #[test]
+  fn test_p1() {
+    assert_eq!(run(false, true), "7");
+  }
+
+  #[test]
+  fn test_p2() {
+    assert_eq!(run(true, true), "5");
   }
 }

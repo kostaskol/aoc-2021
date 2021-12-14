@@ -1,18 +1,18 @@
-use crate::utils;
+use crate::utils::read_file;
 use crate::board::Point;
 
 type Pointpair = (Point, Point);
 type Pointset = Vec<(Point, Point)>;
 
 pub fn run(extra: bool, test: bool) -> String {
-  let lines = utils::read_lines(&utils::inp_file("5", test));
+  let lines = read_file("5", test);
   let points: Pointset = from_lines(lines);
   let oceanfloor = Oceanfloor::new(&points);
 
   format!("{}",
     match extra {
-      true => p1::run(oceanfloor, points),
-      false => p2::run(oceanfloor, points),
+      false => p1::run(oceanfloor, points),
+      true => p2::run(oceanfloor, points),
     }
   )
 }
@@ -190,5 +190,23 @@ mod p1 {
     }
 
     count_twos(&oceanfloor)
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  #[allow(unused_imports)]
+  use super::run;
+
+  #[test]
+  fn test_p1() {
+    // TODO: Fix this
+    // assert_eq!(run(false, true), "5");
+  }
+
+  #[test]
+  fn test_p2() {
+    // TODO: Fix this
+    // assert_eq!(run(true, true), "12");
   }
 }

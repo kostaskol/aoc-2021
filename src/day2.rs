@@ -1,13 +1,13 @@
-use crate::utils;
+use crate::utils::read_file;
 
 pub fn run(extra: bool, test: bool) -> String {
-  let input = utils::read_lines(&utils::inp_file("2", test));
+  let input = read_file("2", test);
   let directions = Direction::parse(input);
 
   format!("{}",
     match extra {
-      true => p1::run(directions),
-      false => p2::run(directions)
+      false => p1::run(directions),
+      true => p2::run(directions)
     }
   )
 }
@@ -107,5 +107,20 @@ mod p2 {
     }
 
     position.hor * position.depth
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::run;
+
+  #[test]
+  fn test_p1() {
+    assert_eq!(run(false, true), "150");
+  }
+
+  #[test]
+  fn test_p2() {
+    assert_eq!(run(true, true), "900");
   }
 }

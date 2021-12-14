@@ -1,8 +1,8 @@
-use crate::utils;
+use crate::utils::read_file;
 use crate::board::{Point, Board};
 
 pub fn run(extra: bool, test: bool) -> String {
-  let lines = utils::read_lines(&utils::inp_file("11", test));
+  let lines = read_file("11", test);
   let board = parse_board(lines);
 
   format!("{}",
@@ -162,5 +162,20 @@ mod p2 {
         runtype.next();
       }
     }
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::run;
+
+  #[test]
+  fn test_p1() {
+    assert_eq!(run(false, true), "1656");
+  }
+
+  #[test]
+  fn test_p2() {
+    assert_eq!(run(true, true), "195");
   }
 }

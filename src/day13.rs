@@ -1,10 +1,10 @@
 use std::collections::HashSet;
 use regex::Regex;
-use crate::utils;
+use crate::utils::read_file;
 use crate::board::Point;
 
 pub fn run(extra: bool, test: bool) -> String {
-  let lines = utils::read_lines(&utils::inp_file("13", test));
+  let lines = read_file("13", test);
   let (points, folds) = parse_input(lines);
 
   format!("{}",
@@ -177,4 +177,17 @@ mod p2 {
 
     0
   }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::run;
+
+  #[test]
+  fn test_p1() {
+    assert_eq!(run(false, true), "17")
+  }
+
+  // Cannot write tests for p2 since it
+  // depends on reading the 2D array in the output
 }

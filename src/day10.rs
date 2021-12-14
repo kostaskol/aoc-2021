@@ -1,12 +1,12 @@
 extern crate maplit;
 use std::collections::HashMap;
 use maplit::hashmap;
-use crate::utils;
+use crate::utils::read_file;
 
 type SymbolList = Vec<Vec<char>>;
 
 pub fn run(extra: bool, test: bool) -> String {
-  let lines = utils::read_lines(&utils::inp_file("10", test));
+  let lines = read_file("10", test);
   let symbols = parse_symbols(&lines);
 
   format!("{}",
@@ -144,4 +144,19 @@ fn parse_symbols(input: &[String]) -> SymbolList {
     lines.push(symbols);
   }
   lines
+}
+
+#[cfg(test)]
+mod tests {
+  use super::run;
+
+  #[test]
+  fn test_p1() {
+    assert_eq!(run(false, true), "26397");
+  }
+
+  #[test]
+  fn test_p2() {
+    assert_eq!(run(true, true), "288957");
+  }
 }

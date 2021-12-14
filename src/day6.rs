@@ -1,16 +1,12 @@
-use crate::utils;
+use crate::utils::read_file;
 
 pub fn run(extra: bool, test: bool) -> String {
-  let input = utils::read_lines(&utils::inp_file("6", test));
+  let input = read_file("6", test);
 
   format!("{}",
     match extra {
-      false => {
-        p1::run(School::from_input(input))
-      },
-      true => {
-        p2::run(parse_line(&input[0]))
-      }
+      false => p1::run(School::from_input(input)),
+      true => p2::run(parse_line(&input[0]))
     }
   )
 }
@@ -105,5 +101,20 @@ mod p1 {
     }
 
     school.fishes.len() as i64
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::run;
+
+  #[test]
+  fn test_p1() {
+    assert_eq!(run(false, true), "5934");
+  }
+
+  #[test]
+  fn test_p2() {
+    assert_eq!(run(true, true), "26984457539");
   }
 }

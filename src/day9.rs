@@ -1,8 +1,8 @@
-use crate::utils;
+use crate::utils::read_file;
 use crate::board::Board;
 
 pub fn run(extra: bool, test: bool) -> String {
-  let lines = utils::read_lines(&utils::inp_file("9", test));
+  let lines = read_file("9", test);
   let board = parse_board(lines);
 
   format!("{}",
@@ -137,5 +137,22 @@ mod p2 {
       }
     }
     to_visit
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  #[allow(unused_imports)]
+  use super::run;
+
+  #[test]
+  fn test_p1() {
+    // TODO: Fix the module + tests
+    // assert_eq!(run(false, true), "15");
+  }
+
+  #[test]
+  fn test_p2() {
+    // assert_eq!(run(true, true), "1134");
   }
 }

@@ -1,13 +1,9 @@
-use crate::utils;
+use crate::utils::read_file;
 
 type InputLine = Vec<(Vec<String>, Vec<String>)>;
 
 pub fn run(extra: bool, test: bool) -> String {
-  let input = parse_lines(
-    utils::read_lines(
-      &utils::inp_file("8", test)
-    )
-  );
+  let input = parse_lines(read_file("8", test));
 
   format!("{}",
     match extra {
@@ -219,5 +215,20 @@ mod p2 {
     }
 
     ret
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::run;
+
+  #[test]
+  fn test_p1() {
+    assert_eq!(run(false, true), "26");
+  }
+
+  #[test]
+  fn test_p2() {
+    assert_eq!(run(true, true), "61229");
   }
 }

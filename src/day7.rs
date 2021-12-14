@@ -1,7 +1,7 @@
-use crate::utils;
+use crate::utils::read_file;
 
 pub fn run(extra: bool, test: bool) -> String {
-  let lines = utils::read_lines(&utils::inp_file("7", test));
+  let lines = read_file("7", test);
   let input = parse_line(&lines[0]);
 
   format!("{}",
@@ -81,5 +81,20 @@ mod p2 {
     }
 
     min
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::run;
+
+  #[test]
+  fn test_p1() {
+    assert_eq!(run(false, true), "37");
+  }
+
+  #[test]
+  fn test_p2() {
+    assert_eq!(run(true, true), "168");
   }
 }

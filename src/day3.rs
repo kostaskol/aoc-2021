@@ -1,15 +1,15 @@
-use crate::utils;
+use crate::utils::read_file;
 
 type Binset = Vec<Bin>;
 
 pub fn run(extra: bool, test: bool) -> String {
-  let lines = utils::read_lines(&utils::inp_file("3", test));
+  let lines = read_file("3", test);
   let binary = Bin::from_input(lines);
 
   format!("{}",
     match extra {
-      true => p1::run(binary),
-      false => p2::run(binary)
+      false => p1::run(binary),
+      true => p2::run(binary)
     }
   )
 }
@@ -177,5 +177,20 @@ mod p2 {
     }
 
     answer[0].to_decimal()
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::run;
+
+  #[test]
+  fn test_p1() {
+    assert_eq!(run(false, true), "198");
+  }
+
+  #[test]
+  fn test_p2() {
+    assert_eq!(run(true, true), "230");
   }
 }

@@ -1,9 +1,7 @@
-use std::fs;
+use std::fs::read_to_string;
 
-pub fn read_lines(input: &str) -> Vec<String> {
-    let content = fs::read_to_string(input).unwrap_or_else(|_| panic!("Put something in {}, jeez..", input));
-
-    content.split('\n').map(|s| s.to_string()).collect()
+pub fn read_file(day: &str, test: bool) -> Vec<String> {
+    read_lines(&inp_file(day, test))
 }
 
 pub fn convert_to_ints(lines: &[String]) -> Vec<i32> {
@@ -12,11 +10,17 @@ pub fn convert_to_ints(lines: &[String]) -> Vec<i32> {
     .collect()
 }
 
-pub fn inp_file(day: &str, test: bool) -> String {
-    format!("inputs/{}.txt",
-        match test {
-            true => "test",
-            false => day
-        }
-    )
+fn read_lines(input: &str) -> Vec<String> {
+    let content = read_to_string(input)
+        .unwrap_or_else(|_| panic!("Put something in {} first", input));
+
+    content.split('\n').map(|s| s.to_string()).collect()
+}
+
+fn inp_file(day: &str, test: bool) -> String {
+    if test {
+        format!("input/test/day{}.in", day)
+    } else {
+        format!("input/day{}.in", day)
+    }
 }

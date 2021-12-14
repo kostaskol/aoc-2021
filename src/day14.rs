@@ -1,8 +1,8 @@
 use std::collections::HashMap;
-use crate::utils;
+use crate::utils::read_file;
 
 pub fn run(extra: bool, test: bool) -> String {
-  let lines = utils::read_lines(&utils::inp_file("14", test));
+  let lines = read_file("14", test);
   let polymer = Polymer::from_string(&lines[0]);
   let rules = parse_rules(&lines[2..]);
 
@@ -105,5 +105,20 @@ mod p2 {
       poly.apply_rules(&rules);
     }
     poly.score()
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::run;
+
+  #[test]
+  fn test_p1() {
+    assert_eq!(run(false, true), "1588");
+  }
+
+  #[test]
+  fn test_p2() {
+    assert_eq!(run( true, true), "2188189693529")
   }
 }

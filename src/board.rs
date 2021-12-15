@@ -1,5 +1,6 @@
 pub type Point = (usize, usize);
 
+#[derive(Debug)]
 pub struct Board<T>(Vec<Vec<T>>);
 
 impl<T> Board<T> {
@@ -19,11 +20,15 @@ impl<T> Board<T> {
     self.0.get_mut(point.0).and_then(|row| row.get_mut(point.1))
   }
 
+  pub fn get_row(&self, row: usize) -> Option<&Vec<T>> {
+    self.0.get(row)
+  }
+
   pub fn expose(&self) -> &Vec<Vec<T>> {
     &self.0
   }
 
-  pub fn get_neighbours(&self, p: Point, diagonals: bool) -> Vec<Point> {
+  pub fn get_neighbours(&self, p: &Point, diagonals: bool) -> Vec<Point> {
     let mut neighbours = vec![];
     let board = &self.0;
 
@@ -67,8 +72,18 @@ impl<T> Board<T> {
   }
 }
 
+impl <T> Board<T>
+  where T: Copy {
+
+  pub fn with_defaults(val: T, dim: (usize, usize)) -> Self {
+    let vec = vec![vec![val; dim.1]; dim.0];
+    Board(vec)
+  }
+}
+
 impl<T> Board<T>
   where T: Clone {
+
   pub fn from_points(points: &[Point], empty_val: T, full_val: T) -> Self {
     let max_x = points.iter().map(|e| e.0).max().unwrap() + 1;
     let max_y = points.iter().map(|e| e.1).max().unwrap() + 1;
@@ -96,7 +111,7 @@ mod test {
       vec!['g', 'h', 'i'],
     ]);
 
-    let neighbours: Vec<Point> = board.get_neighbours((1, 1), false);
+    let neighbours: Vec<Point> = board.get_neighbours(&(1, 1), false);
     let expected_neighbours: Vec<Point> = vec![(0, 1), (1, 0), (1, 2), (2, 1)];
 
     assert_eq!(neighbours.len(), expected_neighbours.len());
@@ -113,7 +128,7 @@ mod test {
       vec!['g', 'h', 'i'],
     ]);
 
-    let neighbours: Vec<Point> = board.get_neighbours((1, 1), true);
+    let neighbours: Vec<Point> = board.get_neighbours(&(1, 1), true);
     let expected_neighbours: Vec<Point> = vec![
       (0, 0), (0, 1), (0, 2),
       (1, 0), (1, 2),

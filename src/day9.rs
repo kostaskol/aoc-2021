@@ -34,7 +34,7 @@ fn mark_low_points(board: &mut Board<(u8, bool)>) {
   for i in 0..dim.0 {
     for j in 0..dim.1 {
       let p = (i, j);
-      let neighbours = board.get_neighbours(p, false);
+      let neighbours = board.get_neighbours(&p, false);
       let curr = board.get(p).unwrap();
       let mut lower_neighbour = false;
       for n in neighbours {
@@ -126,7 +126,7 @@ mod p2 {
     visited: &HashSet<Point>
   ) -> Vec<Point> {
     let mut to_visit = Vec::new();
-    let neighb = board.get_neighbours(*p, false);
+    let neighb = board.get_neighbours(p, false);
     let low_point_val = board.get(*p).unwrap().0;
     for n in neighb {
       let neighb_val = board.get(n).unwrap().0;

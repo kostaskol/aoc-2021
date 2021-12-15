@@ -70,7 +70,7 @@ fn flash(board: &mut Board<Octopus>, p: Point) -> i32 {
   board.get_mut(p).unwrap().flashed();
 
   let mut total_flashes = 1;
-  let neighbours = board.get_neighbours(p, true);
+  let neighbours = board.get_neighbours(&p, true);
 
   for n in neighbours {
     board.get_mut(n).unwrap().gain_energy();

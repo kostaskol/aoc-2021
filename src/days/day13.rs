@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use regex::Regex;
-use crate::utils::read_file;
-use crate::board::Point;
+use crate::utils::parsing::read_file;
+use crate::utils::board::Point;
 
 pub fn run(extra: bool, test: bool) -> String {
   let lines = read_file("13", test);
@@ -91,7 +91,7 @@ fn parse_input(lines: Vec<String>) -> (HashSet<Point>, Vec<Fold>) {
 
 mod p1 {
   use std::collections::HashSet;
-  use crate::board::Point;
+  use crate::utils::board::Point;
   use super::Fold;
 
   pub fn run(points: HashSet<Point>, folds: Vec<Fold>) -> i32 {
@@ -136,7 +136,7 @@ mod p1 {
 
 mod p2 {
   use std::collections::HashSet;
-  use crate::board::{Board, Point};
+  use crate::utils::board::{Board, Point};
   use super::Fold;
 
   pub fn run(points: HashSet<Point>, folds: Vec<Fold>) -> i32 {

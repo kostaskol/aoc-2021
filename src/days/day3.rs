@@ -1,4 +1,4 @@
-use crate::utils::read_file;
+use crate::utils::parsing::read_file;
 
 type Binset = Vec<Bin>;
 

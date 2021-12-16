@@ -1,5 +1,5 @@
-use crate::utils::read_file;
-use crate::board::{Point, Board};
+use crate::utils::parsing::read_file;
+use crate::utils::board::{Point, Board};
 
 pub fn run(extra: bool, test: bool) -> String {
   let lines = read_file("11", test);
@@ -104,7 +104,7 @@ fn parse_board(lines: Vec<String>) -> Board<Octopus> {
 }
 
 mod p1 {
-  use crate::board::{Board};
+  use crate::utils::board::{Board};
   use super::{Octopus, RunType, flash, reset};
 
   pub fn run(mut board: Board<Octopus>) -> i32 {
@@ -135,7 +135,7 @@ mod p1 {
 }
 
 mod p2 {
-  use crate::board::Board;
+  use crate::utils::board::Board;
   use super::{Octopus, RunType, flash, reset};
 
   pub fn run(mut board: Board<Octopus>) -> i32 {

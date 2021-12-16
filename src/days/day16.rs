@@ -1,5 +1,5 @@
-use crate::utils::read_file;
-use crate::bit_range::BitRange;
+use crate::utils::parsing::read_file;
+use crate::utils::bit_range::BitRange;
 
 pub fn run(extra: bool, test: bool) -> String {
   let lines = read_file("16", test);
@@ -15,7 +15,7 @@ pub fn run(extra: bool, test: bool) -> String {
 }
 
 mod p1 {
-  use crate::bit_range::*;
+  use crate::utils::bit_range::*;
 
   pub fn run(mut packet: BitRange) -> isize {
     parse_packet(&mut packet)
@@ -79,7 +79,7 @@ mod p1 {
 }
 
 mod p2 {
-  use crate::bit_range::*;
+  use crate::utils::bit_range::*;
 
   pub fn run(mut packet: BitRange) -> isize {
     parse_packet(&mut packet)

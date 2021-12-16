@@ -1,5 +1,5 @@
-use crate::utils::read_file;
-use crate::board::{Point, Board};
+use crate::utils::parsing::read_file;
+use crate::utils::board::{Point, Board};
 
 const BOARD_LENGTH: usize = 5;
 

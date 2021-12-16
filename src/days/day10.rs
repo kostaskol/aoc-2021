@@ -1,7 +1,7 @@
 extern crate maplit;
 use std::collections::HashMap;
 use maplit::hashmap;
-use crate::utils::read_file;
+use crate::utils::parsing::read_file;
 
 type SymbolList = Vec<Vec<char>>;
 

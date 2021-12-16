@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::utils::read_file;
+use crate::utils::parsing::read_file;
 
 pub fn run(extra: bool, test: bool) -> String {
   let lines = read_file("14", test);

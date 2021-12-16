@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::utils::read_file;
+use crate::utils::parsing::read_file;
 
 type Graph = HashMap<String, Vec<String>>;
 

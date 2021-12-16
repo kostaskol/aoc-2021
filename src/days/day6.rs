@@ -1,4 +1,4 @@
-use crate::utils::read_file;
+use crate::utils::parsing::read_file;
 
 pub fn run(extra: bool, test: bool) -> String {
   let input = read_file("6", test);

@@ -1,5 +1,5 @@
-use crate::utils::read_file;
-use crate::board::Board;
+use crate::utils::parsing::read_file;
+use crate::utils::board::Board;
 
 pub fn run(extra: bool, test: bool) -> String {
   let lines = read_file("9", test);
@@ -48,7 +48,7 @@ fn mark_low_points(board: &mut Board<(u8, bool)>) {
 }
 
 mod p1 {
-  use crate::board::{Board};
+  use crate::utils::board::Board;
   use super::mark_low_points;
 
   pub fn run(mut board: Board<(u8, bool)>) -> i32 {
@@ -70,7 +70,7 @@ mod p1 {
 
 mod p2 {
   use std::collections::{HashSet, VecDeque};
-  use crate::board::{Board, Point};
+  use crate::utils::board::{Board, Point};
   use super::mark_low_points;
 
   pub fn run(mut board: Board<(u8, bool)>) -> i32 {

@@ -14,7 +14,11 @@ fn read_lines(input: &str) -> Vec<String> {
     let content = read_to_string(input)
         .unwrap_or_else(|_| panic!("Put something in {} first", input));
 
-    content.split('\n').map(|s| s.to_string()).collect()
+    content
+        .split('\n')
+        .map(|s| s.to_string())
+        .filter(|s| !s.starts_with('#'))
+        .collect()
 }
 
 fn inp_file(day: &str, test: bool) -> String {

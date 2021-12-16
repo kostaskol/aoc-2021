@@ -1,5 +1,5 @@
-use crate::utils::read_file;
-use crate::board::Point;
+use crate::utils::parsing::read_file;
+use crate::utils::board::Point;
 
 type Pointpair = (Point, Point);
 type Pointset = Vec<(Point, Point)>;

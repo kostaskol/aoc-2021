@@ -1,7 +1,7 @@
 use std::collections::{HashMap, BinaryHeap};
 use std::cmp::Ordering;
-use crate::utils::read_file;
-use crate::board::{Board, Point};
+use crate::utils::parsing::read_file;
+use crate::utils::board::{Board, Point};
 
 pub fn run(extra: bool, test: bool) -> String {
   let lines = read_file("15", test);
@@ -88,7 +88,7 @@ fn dijkstra(board: Board<u32>) -> u32 {
 }
 
 mod p1 {
-  use crate::board::Board;
+  use crate::utils::board::Board;
   use super::dijkstra;
 
   pub fn run(board: Board<u32>) -> u32 {
@@ -97,7 +97,7 @@ mod p1 {
 }
 
 mod p2 {
-  use crate::board::Board;
+  use crate::utils::board::Board;
   use super::dijkstra;
 
   pub fn run(board: Board<u32>) -> u32 {

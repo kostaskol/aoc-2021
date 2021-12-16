@@ -1,3 +1,2 @@
-pub mod parsing;
+pub mod input;
 pub mod board;
-pub mod bit_range;

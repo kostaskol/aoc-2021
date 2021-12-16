@@ -1,8 +1,8 @@
-use crate::utils::parsing;
+use crate::utils::input;
 
 pub fn run(extra: bool, test: bool) -> String {
-  let lines = parsing::read_file("1", test);
-  let input: Vec<i32> = parsing::convert_to_ints(&lines);
+  let lines = input::read_file("1", test);
+  let input: Vec<i32> = input::convert_to_ints(&lines);
 
   format!("{}",
     match extra {

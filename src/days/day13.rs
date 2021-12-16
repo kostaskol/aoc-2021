@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 use regex::Regex;
-use crate::utils::parsing::read_file;
+use crate::utils::input::read_file;
 use crate::utils::board::Point;
 
 pub fn run(extra: bool, test: bool) -> String {

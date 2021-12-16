@@ -1,4 +1,4 @@
-use crate::utils::parsing::read_file;
+use crate::utils::input::read_file;
 use crate::utils::board::{Point, Board};
 
 pub fn run(extra: bool, test: bool) -> String {

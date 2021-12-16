@@ -3,6 +3,7 @@ use clap::{Arg, App};
 
 mod days;
 mod utils;
+mod parsing;
 
 use crate::days::*;
 

@@ -1,21 +1,5 @@
 use std::num::ParseIntError;
 
-// Returns a tuple containing the version and type_id
-pub fn header(mut packet: &mut BitRange) -> (isize, isize) {
-  (version(&mut packet), type_id(&mut packet))
-}
-
-pub fn length_type_id(packet: &mut BitRange) -> isize {
-  packet.slice(1).unwrap().as_isize().unwrap()
-}
-
-fn version(packet: &mut BitRange) -> isize {
-  packet.slice(3).unwrap().as_isize().unwrap()
-}
-
-fn type_id(packet: &mut BitRange) -> isize {
-  packet.slice(3).unwrap().as_isize().unwrap()
-}
 
 #[derive(Debug)]
 pub struct BitRange {
@@ -24,16 +8,6 @@ pub struct BitRange {
 }
 
 impl BitRange {
-  pub fn from_hex(hex: &str) -> Self {
-    let mut bitstring: Vec<char> = Vec::new();
-
-    for hexdigit in hex.chars() {
-      bitstring.append(&mut Self::lookup(hexdigit));
-    }
-
-    Self { bitstring, pos: 0 }
-  }
-
   pub fn slice(&mut self, length: usize) -> Option<BitRange> {
     let old_pos = self.pos;
     self.pos = old_pos + length;
@@ -49,10 +23,6 @@ impl BitRange {
     self.take(1)[0]
   }
 
-  pub fn from(bits: &[char]) -> Self {
-    Self { bitstring: bits.to_vec(), pos: 0 }
-  }
-
   pub fn as_str(&self) -> String {
     self.bitstring.iter().collect()
   }
@@ -66,7 +36,7 @@ impl BitRange {
   }
 
   fn range(&self, start: usize, end: usize) -> Option<BitRange> {
-    self.bitstring.get(start..end).map(|slice| BitRange::from(slice))
+    self.bitstring.get(start..end).map(BitRange::from)
   }
 
   fn lookup(hex: char) -> Vec<char> {
@@ -89,5 +59,23 @@ impl BitRange {
       'F' => "1111",
       x => panic!("Unrecognized hex digit: {}", x)
     }.chars().collect()
+  }
+}
+
+impl From<&str> for BitRange {
+  fn from(hex: &str) -> Self {
+    let mut bitstring: Vec<char> = Vec::new();
+
+    for hexdigit in hex.chars() {
+      bitstring.append(&mut Self::lookup(hexdigit));
+    }
+
+    Self { bitstring, pos: 0 }
+  }
+}
+
+impl From<&[char]> for BitRange {
+  fn from(bits: &[char]) -> Self {
+    Self { bitstring: bits.to_vec(), pos: 0 }
   }
 }

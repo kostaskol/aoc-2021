@@ -1,4 +1,4 @@
-use crate::utils::parsing::read_file;
+use crate::utils::input::read_file;
 
 type InputLine = Vec<(Vec<String>, Vec<String>)>;
 

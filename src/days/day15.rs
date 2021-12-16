@@ -1,6 +1,6 @@
 use std::collections::{HashMap, BinaryHeap};
 use std::cmp::Ordering;
-use crate::utils::parsing::read_file;
+use crate::utils::input::read_file;
 use crate::utils::board::{Board, Point};
 
 pub fn run(extra: bool, test: bool) -> String {
